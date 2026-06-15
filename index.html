@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoPulse • Crypto News Aggregator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Simple Crypto News</h1>
+    <p>Daily Finance...</p>
+    
+    <input type="text" id="search" placeholder="Search Bitcoin, Ethereum, Solana..." onkeyup="if(event.key==='Enter') searchNews()">
+    
+<div class="categories">
+  <button onclick="fetchNews('stablecoins')">Stablecoins-Related</button>
+  <button onclick="fetchNews('coindesk')">CoinDesk</button>
+  <button onclick="fetchNews('cointelegraph')">Cointelegraph</button>
+  <button onclick="fetchNews('decrypt')">Decrypt</button>
+  <button onclick="fetchNews('cryptobriefing')">Crypto Briefing</button>
+</div>
+  </header>
+
+  <main id="news-container" class="news-grid"></main>
+
+  <script src="script.js"></script>
+</body>
+</html>
