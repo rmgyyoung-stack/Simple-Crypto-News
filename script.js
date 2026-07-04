@@ -5,7 +5,18 @@ const FEEDS = {
   coindesk: 'https://www.coindesk.com/arc/outboundfeeds/rss/',
   cointelegraph: 'https://cointelegraph.com/rss',
   decrypt: 'https://decrypt.co/feed',
-  cryptobriefing: 'https://cryptobriefing.com/feed/'
+  cryptobriefing: 'https://cryptobriefing.com/feed/',
+  
+  // DeFi Combo feeds
+  deficombo: [
+    'https://governance.aave.com/posts.rss',
+    'https://bankless.com/rss/feed',
+    'https://thedefiant.io/api/feed',
+    'https://news.curve.finance/rss',
+    'https://blog.uniswap.org/feed',
+    'https://messari.io/rss',
+    'https://multicoin.capital/rss.xml'
+  ]
 };
 
 // Global storage
@@ -32,11 +43,10 @@ async function fetchRSS(url, sourceName) {
       const pubDateStr = item.querySelector("pubDate")?.textContent || "";
       
       let image = item.querySelector("media\\:content, enclosure, media\\:thumbnail")?.getAttribute("url") || 
-                 "https://via.placeholder.com/600x340/1e2937/64748b?text=Crypto+News";
+                 "https://via.placeholder.com/600x340/1e2937/64748b?text=News";
 
       const pubDate = pubDateStr ? new Date(pubDateStr) : new Date(0);
       
-      // Clean HTML tags and show much longer summary (more complete)
       let cleanDescription = rawDescription.replace(/<[^>]+>/g, '').trim();
       
       articles.push({
@@ -69,6 +79,7 @@ async function fetchNews(mode = 'stablecoins') {
   let articlesFromSources = [];
 
   if (mode === 'stablecoins') {
+    // Stablecoins-Related now includes DeFi Combo
     const sources = [
       {key: 'coindesk', name: 'CoinDesk'},
       {key: 'cointelegraph', name: 'Cointelegraph'},
@@ -81,32 +92,41 @@ async function fetchNews(mode = 'stablecoins') {
       articlesFromSources = articlesFromSources.concat(arts);
     }
 
+    // Add DeFi Combo
+    const defiFeeds = FEEDS.deficombo;
+    const defiNames = ["Aave Governance", "Bankless", "The Defiant", "Curve", "Uniswap", "Messari", "Multicoin"];
+    for (let i = 0; i < defiFeeds.length; i++) {
+      const arts = await fetchRSS(defiFeeds[i], defiNames[i]);
+      articlesFromSources = articlesFromSources.concat(arts);
+    }
+
+    // Filter for stablecoin
     articlesFromSources = articlesFromSources.filter(article => 
       article.title.toLowerCase().includes('stablecoin') || 
       article.description.toLowerCase().includes('stablecoin')
     );
 
+  } else if (mode === 'deficombo') {
+    container.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#94a3b8;">Loading DeFi News Combo...</p>';
+    
+    const defiFeeds = FEEDS.deficombo;
+    const defiNames = ["Aave Governance", "Bankless", "The Defiant", "Curve", "Uniswap", "Messari", "Multicoin"];
+
+    for (let i = 0; i < defiFeeds.length; i++) {
+      const arts = await fetchRSS(defiFeeds[i], defiNames[i]);
+      articlesFromSources = articlesFromSources.concat(arts);
+    }
+
   } else {
+    // Single source tabs
     let sourceName = '';
     let feedUrl = '';
 
     switch(mode) {
-      case 'coindesk':
-        feedUrl = FEEDS.coindesk;
-        sourceName = 'CoinDesk';
-        break;
-      case 'cointelegraph':
-        feedUrl = FEEDS.cointelegraph;
-        sourceName = 'Cointelegraph';
-        break;
-      case 'decrypt':
-        feedUrl = FEEDS.decrypt;
-        sourceName = 'Decrypt';
-        break;
-      case 'cryptobriefing':
-        feedUrl = FEEDS.cryptobriefing;
-        sourceName = 'Crypto Briefing';
-        break;
+      case 'coindesk': feedUrl = FEEDS.coindesk; sourceName = 'CoinDesk'; break;
+      case 'cointelegraph': feedUrl = FEEDS.cointelegraph; sourceName = 'Cointelegraph'; break;
+      case 'decrypt': feedUrl = FEEDS.decrypt; sourceName = 'Decrypt'; break;
+      case 'cryptobriefing': feedUrl = FEEDS.cryptobriefing; sourceName = 'Crypto Briefing'; break;
     }
 
     if (feedUrl) {
@@ -197,6 +217,14 @@ async function searchNews() {
                  src === 'coindesk' ? 'CoinDesk' : 
                  src === 'cointelegraph' ? 'Cointelegraph' : 'Decrypt';
     const arts = await fetchRSS(FEEDS[src], name);
+    allArticles = allArticles.concat(arts);
+  }
+
+  // Include DeFi Combo in search too
+  const defiFeeds = FEEDS.deficombo;
+  const defiNames = ["Aave Governance", "Bankless", "The Defiant", "Curve", "Uniswap", "Messari", "Multicoin"];
+  for (let i = 0; i < defiFeeds.length; i++) {
+    const arts = await fetchRSS(defiFeeds[i], defiNames[i]);
     allArticles = allArticles.concat(arts);
   }
 
