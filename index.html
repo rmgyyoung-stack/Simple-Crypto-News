@@ -11,7 +11,7 @@
     <h1>Simple Crypto News</h1>
     <p>Daily Finance...</p>
     
-    <input type="text" id="search" placeholder="Search Bitcoin, Ethereum, Solana..." onkeyup="if(event.key==='Enter') searchNews()">
+    <input type="text" id="search" placeholder="Search for..." onkeyup="if(event.key==='Enter') searchNews()">
     
 <div class="categories">
   <button onclick="fetchNews('stablecoins')">Stablecoins-Related</button>
@@ -19,6 +19,7 @@
   <button onclick="fetchNews('cointelegraph')">Cointelegraph</button>
   <button onclick="fetchNews('decrypt')">Decrypt</button>
   <button onclick="fetchNews('cryptobriefing')">Crypto Briefing</button>
+  <button onclick="fetchNews('deficombo')">DeFi News Combo</button>
 </div>
   </header>
 
